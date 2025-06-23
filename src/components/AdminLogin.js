@@ -5,11 +5,10 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 
 // Configure axios defaults
-const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://discount-mithra-3.onrender.com'  // Production API URL
-  : 'http://localhost:8000';
-
-axios.defaults.baseURL = API_URL;
+// When using Next.js API routes on the same domain,
+// you can often use relative paths, so baseURL can be omitted
+// or set to an empty string. Axios will then use the current origin.
+axios.defaults.baseURL = ''; // Set to empty string for relative paths
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const AdminLogin = () => {
@@ -25,6 +24,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
+      // Call your Next.js API route for admin login
       const response = await axios.post('/api/admin/login', {
         username: username.trim(),
         password: password.trim()
@@ -44,11 +44,11 @@ const AdminLogin = () => {
       }
     } catch (err) {
       console.error('Login error:', err);
-      if (err.response) {
+      if (axios.isAxiosError(err) && err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
         setError(err.response.data.message || 'Invalid username or password');
-      } else if (err.request) {
+      } else if (axios.isAxiosError(err) && err.request) {
         // The request was made but no response was received
         setError('Unable to connect to server. Please try again later.');
       } else {
@@ -60,7 +60,7 @@ const AdminLogin = () => {
     }
   };
 
-  // Animation variants
+  // Animation variants (no changes needed)
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -204,4 +204,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin; 
+export default AdminLogin;

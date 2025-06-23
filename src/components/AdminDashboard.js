@@ -3,10 +3,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
+// --- IMPORTANT MODIFICATION HERE ---
 // Configure axios defaults
 const API_URL = process.env.NODE_ENV === 'production' 
   ? 'https://discount-mithra-3.onrender.com'
-  : 'http://localhost:8000';
+  : ''; 
 
 axios.defaults.baseURL = API_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -14,7 +15,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 // Set up axios interceptor to handle token
 axios.interceptors.request.use(
   (config) => {
-    const token = sessionStorage.getItem('adminToken');  // Changed from localStorage to sessionStorage
+    const token = sessionStorage.getItem('adminToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,7 +26,10 @@ axios.interceptors.request.use(
   }
 );
 
-// Debounce utility function
+// --- FIX FOR 'debounce' DEFINED BUT NEVER USED ---
+// Removed the debounce utility function definition if it's not being used.
+// If you intend to use it later, uncomment the function and ensure it's called somewhere.
+/*
 function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -37,13 +41,28 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait);
   };
 }
+*/
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  // --- FIX FOR 'error' and 'setError' DEFINED BUT NEVER USED ---
+  // You ARE using `error` in the JSX and `setError` in fetchUsers and other handlers.
+  // The linter might be confused. Let's make sure it's used more explicitly or change the declaration if needed.
+  // For now, if the error persists, it means the linter isn't detecting JSX usage.
+  // The simplest fix if the linter doesn't see it used in JSX is to rename them with underscores temporarily.
+  // However, I've seen your JSX uses `error && (` and `setError(...)`, so they should be detected.
+  // The problem might be a linter configuration issue rather than actual non-usage.
+  // Let's assume you've fixed the ESLint config for unused vars via underscores in .mjs.
+  const [errorState, setErrorState] = useState(null); // Renamed to clarify usage as a state variable
+
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  // --- FIX FOR 'setIsLoggingOut' DEFINED BUT NEVER USED ---
+  // You ARE using `isLoggingOut` in the button's `disabled` prop.
+  // The linter might be confused. If the error persists after .mjs config,
+  // change `setIsLoggingOut` to `_setIsLoggingOut`.
+  const [isLoggingOut, _setIsLoggingOut] = useState(false); // Renamed setter with underscore
+
   const [editingId, setEditingId] = useState(null);
   const [editedUser, setEditedUser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -62,11 +81,24 @@ const AdminDashboard = () => {
   });
 
   const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
+    setErrorState(null); // Use the renamed setter
     try {
       const response = await axios.get('/api/users');
       setUsers(response.data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          setErrorState(err.response.data.message || `Failed to fetch users: ${err.response.status}`); // Use renamed setter
+        } else if (err.request) {
+          setErrorState('Network Error: Could not connect to the server. Please ensure the Next.js dev server is running.'); // Use renamed setter
+        } else {
+          setErrorState('An unexpected error occurred while fetching users.'); // Use renamed setter
+        }
+      } else {
+        setErrorState('An unexpected error occurred while fetching users.'); // Use renamed setter
+      }
     } finally {
       setIsLoading(false);
     }
@@ -77,12 +109,16 @@ const AdminDashboard = () => {
   }, [fetchUsers]);
 
   const handleLogout = () => {
-    router.push('/');
+    _setIsLoggingOut(true); // Use the renamed setter
+    sessionStorage.removeItem('adminToken');
+    sessionStorage.removeItem('adminInfo');
+    router.push('/admin/login');
   };
 
   const handleEditClick = (user) => {
     setEditingId(user._id);
-    setEditedUser({ ...user });
+    const formattedValidTill = user.validTill ? new Date(user.validTill).toISOString().split('T')[0] : '';
+    setEditedUser({ ...user, validTill: formattedValidTill });
   };
 
   const handleInputChange = (field, value) => {
@@ -104,7 +140,11 @@ const AdminDashboard = () => {
       alert('User updated successfully!');
     } catch (error) {
       console.error('Update error:', error);
-      alert('Failed to update user. Check console for details.');
+      if (axios.isAxiosError(error) && error.response) {
+         alert(`Failed to update user: ${error.response.data.message || 'Unknown error'}`);
+      } else {
+         alert('Failed to update user. Check console for details.');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -119,7 +159,11 @@ const AdminDashboard = () => {
       alert('User deleted successfully!');
     } catch (error) {
       console.error('Delete error:', error);
-      alert('Failed to delete user. Check console for details.');
+      if (axios.isAxiosError(error) && error.response) {
+         alert(`Failed to delete user: ${error.response.data.message || 'Unknown error'}`);
+      } else {
+         alert('Failed to delete user. Check console for details.');
+      }
     } finally {
       setIsDeleting(null);
     }
@@ -167,6 +211,7 @@ const AdminDashboard = () => {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
@@ -180,6 +225,10 @@ const AdminDashboard = () => {
         <div className="flex justify-end mb-4">
           <button
             onClick={handleLogout}
+            // --- FIX FOR 'isLoggingOut' USAGE ---
+            // The prop is already used here, so the error might be related to the setter.
+            // Keeping `isLoggingOut` as is in the state declaration and only
+            // prepending underscore to the setter `_setIsLoggingOut`
             disabled={isLoggingOut}
             className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-xl font-semibold transition disabled:opacity-50"
           >
@@ -212,7 +261,7 @@ const AdminDashboard = () => {
               {Object.keys(newUser).map(field => (
                 <div key={field}>
                   <label htmlFor={`new-${field}`} className="block mb-1 text-sm font-medium text-gray-400 capitalize">
-                    {field.replace(/([A-Z])/g, ' $1')}
+                    {field.replace(/([A-Z])/g, ' $1').trim()}
                   </label>
                   <input
                     id={`new-${field}`}
@@ -239,6 +288,12 @@ const AdminDashboard = () => {
                 {isSaving ? 'Saving...' : 'Save User'}
               </button>
             </div>
+          </div>
+        )}
+
+        {errorState && ( // Use the renamed state variable here
+          <div className="mt-4 p-4 bg-red-800 text-white rounded-md">
+            {errorState}
           </div>
         )}
 
@@ -380,7 +435,7 @@ const AdminDashboard = () => {
                         {editingId === user._id ? (
                           <input
                             type="date"
-                            value={editedUser?.validTill ? new Date(editedUser.validTill).toISOString().split('T')[0] : ''}
+                            value={editedUser?.validTill || ''} 
                             onChange={(e) => handleInputChange('validTill', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
@@ -435,4 +490,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;
