@@ -1,7 +1,6 @@
 // src/components/TailorPage.jsx
 import React, { useLayoutEffect } from 'react'; // Import useLayoutEffect
 import { motion } from 'framer-motion';
-import tailor from '../assests/tailor.webp';
 import Note from './note';
 
 // Data specifically for the Tailor Page
@@ -9,7 +8,7 @@ const tailorServices = [
     {
         id: 1,
         name: "Perfect Stitch - Men",
-        image: tailor, // Placeholder image
+        image: '/assests/tailor.webp',
         address: "Shanthinagar",
         Phone: "7799663223",
         offers: [
@@ -40,8 +39,8 @@ const TailorPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-            initial="hidden"
+        className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+        initial="hidden"
             animate="visible"
             variants={sectionVariants}
         >
@@ -83,7 +82,7 @@ const TailorPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = tailor; }} // Fallback on error
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/tailor.webp'; }} // Fallback on error
                             />
                         </div>
                         {/* Content section: uses flex-grow to push button down, ensuring visibility */}

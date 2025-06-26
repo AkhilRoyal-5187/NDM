@@ -1,12 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import bank_img from "../assests/bank.jpg";
-import Note from "./note";
+import Note from "./note"; // Assuming Note.js is in the same directory
+
 const Banking = [
   {
     id: 1,
     name: "Debit & Credits",
-    image: bank_img,
+    image: '/assests/bank.jpg',
     location: "Siricilla",
     Discounts: {
       d1: "0% processing fee",
@@ -18,7 +18,7 @@ const Banking = [
   {
     id: 2,
     name: "HDFC Credit Cards",
-    image: bank_img,
+    image: '/assests/bank.jpg',
     location: "Bus stand",
     Discounts: {
       d1: "10% EMI offers",
@@ -30,7 +30,7 @@ const Banking = [
   {
     id: 3,
     name: "Loan Services",
-    image: bank_img,
+    image: '/assests/bank.jpg',
     location: "discountmithra",
     Discounts: {
       d1: "5% processing fee off",
@@ -59,7 +59,8 @@ const BankingCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
+      // REMOVED: max-w-4xl mx-auto
+      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full" // ADDED: w-full
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -71,9 +72,10 @@ const BankingCards = () => {
         transition={{ duration: 0.6 }}
       >
         Banking in Sircilla
-          </motion.h1>
-          <Note/>
-      <div className="space-y-6">
+      </motion.h1>
+      <Note/>
+      {/* Container for cards - add max-width here to control inner content */}
+      <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0"> {/* Added max-w-4xl, mx-auto, and responsive padding */}
         {Banking.map((banks) => (
           <motion.div
             key={banks.id}

@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import carService_img from "../assests/car_repair.avif";
 import Note from "./note";
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { useRouter } from 'next/navigation'; // Import useRouter for redirection
@@ -10,7 +9,7 @@ const CarServices = [
   {
     id: 1,
     name: "Car Repair Pro",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: "Old Petrol Bunk",
 
     Discounts: {
@@ -23,7 +22,7 @@ const CarServices = [
   {
     id: 2,
     name: "Bike Repair Hub",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: " Near College",
 
     Discounts: {
@@ -36,7 +35,7 @@ const CarServices = [
   {
     id: 3,
     name: "Vasavi Auto Mobiles",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: "Karimnagar Road",
     Discounts: {
       d1: "Up to 20% off",
@@ -46,7 +45,7 @@ const CarServices = [
   {
     id: 4,
     name: "Sri manjunatha hydralic water sarwising center",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: "Srinagar Colany,Karimnagar Road",
     Discounts: {
       d1: "Up to 150 off",
@@ -56,7 +55,7 @@ const CarServices = [
   {
     id: 5,
     name: "Sridurga battery",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: "chandrampet hanuman temple chowrasta,Karimnagar Road,Sircilla",
     Discounts: {
       d1: "35% Discoount on Amaron Battery(with exchange)Up to 20% off",
@@ -67,7 +66,7 @@ const CarServices = [
   {
     id: 6,
     name: "engine carbon cleaning",
-    image: carService_img,
+    image: "/assests/car_repair.avif",
     location: "soon",
     Discounts: {
       d1: " Up to 50% off",
@@ -130,8 +129,7 @@ const CarServiceCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"      initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

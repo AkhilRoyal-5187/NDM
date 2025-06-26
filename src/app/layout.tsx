@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "../components/ClientLayout";
 import { AuthProvider } from '../context/AuthContext';
+import WhatsAppButton from '../components/WhatsAppButton';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ClientLayout>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <WhatsAppButton />
+          </AuthProvider>
         </ClientLayout>
       </body>
     </html>

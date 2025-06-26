@@ -1,118 +1,102 @@
 "use client";
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Button from './Button';
-import doctor from '../assests/doctor2.jpg';
-import education from '../assests/school.jpg';
-import grocery from '../assests/Grocery.webp';
-import food from '../assests/food.jpg';
-import carAndBike from '../assests/carAndBike.webp';
-import banking from '../assests/bank.jpg';
-import travels from '../assests/travels.jpg';
-import shopping from '../assests/shopping.jpg';
-import Constructions from '../assests/constructions.png';
-import Bar from '../assests/bar.webp';
-import wine from '../assests/wine.webp';
-import saloon from '../assests/saloon.webp';
-import tailor from '../assests/tailor.webp';
-import laundry from '../assests/laundry.webp';
-import events from '../assests/events.webp';
-import gift from '../assests/gift.webp';
 
 const services = [
   {
-    img: doctor,
+    img: '/assests/doctor2.jpg',
     title: 'Healthcare ',
     description: 'Save big on prescriptions, doctor visits, and wellness services for your well-being.',
     color: 'bg-purple-500',
   },
   {
-    img: education,
+    img: '/assests/school.jpg',
     title: 'Education',
     description: 'Unlock discounts on school fees, supplies, and educational programs.',
     color: 'bg-blue-400',
   },
   {
-    img: grocery,
+    img: '/assests/Grocery.webp',
     title: 'Fresh',
     description: 'Enjoy exclusive discounts on your everyday grocery shopping and fresh produce.',
     color: 'bg-violet-500',
   },
   {
-    img: food,
+    img: '/assests/food.jpg',
     title: 'Food',
     description: 'From street food to fine dining, explore diverse culinary experiences  special discounts.',
     color: 'bg-rose-400',
   },
   {
-    img: carAndBike,
+    img: '/assests/carAndBike.webp',
     title: 'Car & Bike Care',
     description: 'Get exclusive deals on vehicle maintenance, repairs, and transportation services.',
     color: 'bg-indigo-500',
   },
   {
-    img: banking,
+    img: '/assests/bank.jpg',
     title: 'Banking',
     description: 'Access special offers on loans, credit cards, and other essential financial services.',
     color: 'bg-blue-500',
   },
   {
-    img: travels,
+    img: '/assests/travels.jpg',
     title: 'Travels',
     description: 'Connect with travel dealers and get discounts on hotels, flights, and tour packages.',
     color: 'bg-purple-400',
   },
   {
-    img: shopping,
+    img: '/assests/shopping.jpg',
     title: 'Shopping',
     description: 'Explore trending styles and save big with exclusive discounts from your favorite stores.',
     color: 'bg-violet-600',
   },
   {
-    img: Constructions,
+    img: '/assests/constructions.png',
     title: 'Construction',
     description: 'Find special rates on construction materials, home renovations, and building services.',
     color: 'bg-rose-500',
   },
   {
-    img: Bar,
+    img: '/assests/bar.webp',
     title: 'Bar',
     description: 'Unwind and enjoy great savings on drinks and ambiance at popular bars and lounges.',
     color: 'bg-rose-500',
   },
   {
-    img: wine,
+    img: '/assests/wine.webp',
     title: 'Wine Shop',
     description: 'Discover discounts on a wide selection of wines and spirits from local shops.',
     color: 'bg-rose-500',
   },
   {
-    img: saloon,
+    img: '/assests/saloon.webp',
     title: 'Salon',
     description: 'Treat yourself to hair, beauty, and grooming services with exclusive salon deals.',
     color: 'bg-rose-500',
   },
   {
-    img: tailor,
+    img: '/assests/tailor.webp',
     title: 'Tailor',
     description: 'Get custom fits and alterations for your clothing at discounted rates from skilled tailors.',
     color: 'bg-rose-500',
   },
   {
-    img: laundry,
+    img: '/assests/laundry.webp',
     title: 'Laundry',
     description: 'Save money with convenient discounts on professional laundry and dry-cleaning ',
     color: 'bg-rose-500',
   },
   {
-    img: events,
+    img: '/assests/events.webp',
     title: 'Events',
     description: 'Find exclusive deals on tickets and services for unforgettable events and celebrations.',
     color: 'bg-rose-500',
   },
   {
-    img: gift,
+    img: '/assests/gift.webp',
     title: 'Gift Articles',
     description: 'Discover unique gift ideas and special discounts on articles for every occasion.',
     color: 'bg-rose-500',

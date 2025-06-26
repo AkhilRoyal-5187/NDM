@@ -1,14 +1,13 @@
 // src/components/FoodCards.jsx
 import React from "react";
 import { motion } from "framer-motion";
-import fresh_image from "../assests/fresh_img.jpg"
 import Note from "./note";
 
 const FreshItems = [
   {
     id: 1,
     name: "Daily Veggie Market",
-    image: fresh_image,
+    image: '/assests/fresh_img.jpg',
     address: "Main Bazar",
     Discounts: {
       d1: "20% on veggies🥕",
@@ -20,7 +19,7 @@ const FreshItems = [
   {
     id: 2,
     name: "Fresh Mutton Shop",
-    image: fresh_image,
+    image: '/assests/fresh_img.jpg',
     address: "soon",
     Discounts: {
       d1: "₹50 off/kg",
@@ -32,7 +31,7 @@ const FreshItems = [
   {
     id: 3,
     name: "Fresh Fish Shop",
-    image: fresh_image,
+    image: '/assests/fresh_img.jpg',
     address: " Soon",
     Discounts: {
       d1: "₹50 off/kg-Fish🐟",
@@ -44,7 +43,7 @@ const FreshItems = [
   {
     id: 4,
     name: "Fresh Chicken Shop",
-    image: fresh_image,
+    image: '/assests/fresh_img.jpg',
     address: " Soon",
     Discounts: {
       d1: "₹20 off/k30g🍗",
@@ -56,7 +55,7 @@ const FreshItems = [
   {
     id: 5,
     name: "Milk & More",
-    image: fresh_image,
+    image: '/assests/fresh_img.jpg',
     address: " Soon",
     Discounts: {
       d1: "5% milk discount🥛",
@@ -85,8 +84,8 @@ const FreshCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

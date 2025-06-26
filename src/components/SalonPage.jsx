@@ -1,13 +1,12 @@
 import React, { useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import saloon from '../assests/saloon.webp';
 import Note from './note';
 
 const salonServices = [
     {
         id: 1,
         name: "Hairzone (Men & Women)",
-        image: saloon, 
+        image: '/assests/saloon.webp',
         address: "Gandhi Nagar",
         Phone: "9866339443",
         offers: [
@@ -19,7 +18,7 @@ const salonServices = [
     {
         id: 2,
         name: "Parlour and Boutique",
-        image: saloon,
+        image: '/assests/saloon.webp',
         address: "Soon", 
         Phone: "7799663223",
         offers: [
@@ -46,8 +45,8 @@ const SalonPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-            initial="hidden"
+        className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+        initial="hidden"
             animate="visible"
             variants={sectionVariants}
         >
@@ -89,7 +88,7 @@ const SalonPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = saloon; }}
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/saloon.webp'; }}
                             />
                         </div>
                         {/* Content section: uses flex-grow to push button down, ensuring visibility */}

@@ -1,14 +1,13 @@
 // src/components/HospitalCards.jsx
 import React from "react";
 import { motion } from "framer-motion";
-import shopping_img from "../assests/shopping.jpg";
 import Note from "./note";
 
 const Shopping = [
   {
     id: 1,
     name: "Vishala Shopping Mall",
-    image: shopping_img,
+    image: "/assests/shopping.jpg",
     address: "Near Gandi chowk",
     Discounts: {
       d1: "5% OFF on Bill",
@@ -20,7 +19,7 @@ const Shopping = [
   {
     id: 2,
     name: "Reliance Trends",
-    image: shopping_img,
+    image: "/assests/shopping.jpg",
     address: " Near Old Bus stand",
     distance: "5.8 km",
     Discounts: {
@@ -33,7 +32,7 @@ const Shopping = [
   {
     id: 3,
     name: "MAX Fashion Online",
-    image: shopping_img,
+    image: "/assests/shopping.jpg",
     address: "Gandhi Nagar",
     distance: "10.2 km",
     Discounts: {
@@ -62,8 +61,8 @@ const ShoppingCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

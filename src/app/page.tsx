@@ -2,7 +2,7 @@
 import React from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import elephantImage from "../assests/elephant.png";
+
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
             <div className="text-center lg:text-left lg:w-1/2 space-y-6">
               <div className="hover:scale-105 transition-transform duration-300">
                 <Image 
-                  src={elephantImage} 
+                  src="/assests/elephant.png" 
                   alt="Elephant" 
                   width={160}
                   height={160}

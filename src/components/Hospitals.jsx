@@ -1,13 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import hospitalImage from "../assests/doctor.jpg"; // Assuming one image for now
 import Note from "./note";
 
 const hospitals = [
   {
     id: 1,
     name: "Lullu Children's Hospital",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Gandhi Nagar, Sircilla",
     Discounts: {
       d1: "OP🩺 - FREE",
@@ -20,7 +19,7 @@ const hospitals = [
   {
     id: 2,
     name: "Aditya Neuro & Ortho",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Sircilla",
     Discounts: {
       d1: "OP🩺 - 100 OFF",
@@ -33,7 +32,7 @@ const hospitals = [
   {
     id: 3,
     name: "Amrutha Hospital",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Sircilla",
     Discounts: {
       d1: "OP🩺 - 40%",
@@ -46,7 +45,7 @@ const hospitals = [
   {
     id: 4,
     name: "Chandana Chest Hospital",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Sircilla",
     Discounts: {
       d1: "OP🩺 - 50%",
@@ -59,7 +58,7 @@ const hospitals = [
   {
     id: 5,
     name: "Sri Siddi Vinayaka E.N.T Hospital",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "3-2-84/1, Near Old Bus Stand, Sircilla, Rajanna Sircilla, 505301",
     Discounts: {
       d1: "OP🩺 - 100 OFF",
@@ -72,7 +71,7 @@ const hospitals = [
   {
     id: 6,
     name: "Vihaana Multispeciality Dental Care",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address:
       "Karimnagar - Sircilla Rd, near OLD BUS STAND, Shanti Nagar, Sircilla, Telangana 505301",
     Discounts: {
@@ -86,7 +85,7 @@ const hospitals = [
   {
     id: 7,
     name: "Vinayaka Dental Care - Women Doctor",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address:
       "Opposite College Ground, in Manasa Hospital, Sircilla, Telangana 505301",
     Discounts: {
@@ -100,7 +99,7 @@ const hospitals = [
   {
     id: 8,
     name: "ShivaSai Optics",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Opposite Old Bus Stand, Sircilla, Telangana 505301",
     Discounts: {
       d1: "Eye Checkup - FREE",
@@ -112,7 +111,7 @@ const hospitals = [
   {
     id: 9,
     name: "Laboratory",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Coming Soon",
     Discounts: {
       d1: "Blood Test - 40%",
@@ -124,7 +123,7 @@ const hospitals = [
   {
     id: 10,
     name: "Medical Store",
-    image: hospitalImage,
+    image: '/assests/doctor.jpg',
     address: "Near Old Bus Stand, Sircilla, Rajanna Sircilla, 505301",
     Discounts: {
       d1: "Ethical Medicine - 23%",
@@ -153,8 +152,8 @@ const HospitalCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

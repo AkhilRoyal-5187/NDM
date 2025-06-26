@@ -1,7 +1,6 @@
 // src/components/LaundryPage.jsx
 import React, { useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import laundryImage from '../assests/laundry.webp'; // Assuming you have a specific laundry image
 import Note from './note';
 
 
@@ -10,7 +9,7 @@ const laundryServices = [
     {
         id: 1,
         name: "CleanZone Laundry",
-        image:  laundryImage, // Use laundry-specific image or fallback
+        image: '/assests/laundry.webp',
         address: "ShanthiNagar Road",
         Phone: "7799663223",
         offers: [
@@ -22,7 +21,7 @@ const laundryServices = [
     {
         id: 2,
         name: "Wash Express",
-        image: laundryImage, // Use laundry-specific image or fallback
+        image: '/assests/laundry.webp',
         address: "Soon", // "Soon" implies location is TBD
         Phone: "7799663223",
         offers: [
@@ -52,8 +51,8 @@ const LaundryPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-            initial="hidden"
+        className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+        initial="hidden"
             animate="visible"
             variants={sectionVariants}
         >
@@ -90,7 +89,7 @@ const LaundryPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = laundryImage; }} // Used 'laundryImage' as fallback
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/laundry.webp'; }} // Used 'laundryImage' as fallback
                             />
                         </div>
                         {/* Content section: uses flex-grow to push button down, ensuring visibility */}

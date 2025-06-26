@@ -2,14 +2,14 @@
 import React, { useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 // You might want a specific construction image, but 'gift' is used as a placeholder
-import construction from '../assests/constructions.png'; 
+// import construction from '../assests/constructions.png'; 
 import Note from './note';
 
 const constructionServices = [
     {
         id: 1,
         name: "BuildPro Materials",
-        image: construction, // Placeholder image
+        image: '/assests/constructions.png',
         address: "Bypass Road",
         Phone: "7799663223",
         offers: [
@@ -21,7 +21,7 @@ const constructionServices = [
     {
         id: 2,
         name: "HomeFix Contractors",
-        image: construction, // Placeholder image
+        image: '/assests/constructions.png',
         address: "Gandhi Nagar",
         Phone: "7799663223",
         offers: [
@@ -33,7 +33,7 @@ const constructionServices = [
     {
         id: 3,
         name: "Tiles World",
-        image: construction, // Placeholder image
+        image: '/assests/constructions.png',
         address: "Karimnagar Road",
         Phone: "7799663223",
         offers: [
@@ -61,7 +61,7 @@ const ConstructionPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
+            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
             initial="hidden"
             animate="visible"
             variants={sectionVariants}
@@ -104,7 +104,7 @@ const ConstructionPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = construction; }}
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/constructions.png'; }}
                             />
                         </div>
                         {/* Content section: Uses flex properties to arrange text and button */}

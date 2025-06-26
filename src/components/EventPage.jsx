@@ -1,7 +1,6 @@
 // src/components/GiftCardsPage.jsx
 import React, { useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import Events from '../assests/events.webp'; // Generic image for gift-related items
 import Note from './note';
 
 // Data specifically for the Gift Cards Page (using the provided event-related details)
@@ -9,7 +8,7 @@ const giftCardsServices = [
     {
         id: 1,
         name: "Discountmithra Dream Events",
-        image: Events,
+        image: '/assests/events.webp',
         address: "Sircilla, 505301",
         Phone: "7799663223",
         offers: [
@@ -21,7 +20,7 @@ const giftCardsServices = [
     {
         id: 2,
         name: "Grand Flower Decoration",
-        image: Events,
+        image: '/assests/events.webp',
         address: "Shanthinagar",
         Phone: "7799663223",
         offers: [
@@ -33,7 +32,7 @@ const giftCardsServices = [
     {
         id: 3,
         name: "Catering Deals",
-        image: Events,
+        image: '/assests/events.webp',
         address: "Gandhi Nagar",
         Phone: "7799663223",
         offers: [
@@ -63,8 +62,8 @@ const GiftCardsPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-            initial="hidden"
+        className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+        initial="hidden"
             animate="visible"
             variants={sectionVariants}
         >
@@ -102,7 +101,7 @@ const GiftCardsPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = Events; }} // Used 'Events' image as fallback
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/events.webp'; }} // Used 'Events' image as fallback
                             />
                         </div>
                         {/* Content section: uses flex-grow to push button down, ensuring visibility */}

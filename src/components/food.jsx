@@ -1,14 +1,13 @@
 // src/components/FoodCards.jsx
 import React from "react";
 import { motion } from "framer-motion";
-import restaurants_img from "../assests/Restaurants.jpg"
 import Note from "./note";
 
 const restaurants = [
   {
     id: 1,
     name: "7 Arts Restaurant",
-    image: restaurants_img,
+    image: '/assests/Restaurants.jpg',
     address: "Gandhi Nagar, Sircilla",
 
     discounts: {
@@ -20,7 +19,7 @@ const restaurants = [
   {
     id: 2,
     name: "Ice House",
-    image: restaurants_img,
+    image: '/assests/Restaurants.jpg',
     address: "Sircilla",
     discounts: {
       d1: "10% on menu",
@@ -31,7 +30,7 @@ const restaurants = [
   {
     id: 3,
     name: "Shankar Pani Puri",
-    image: restaurants_img,
+    image: '/assests/Restaurants.jpg',
     address: "Shivalayam, Sircilla",
      discounts: {
       d1: "15% bill discount",
@@ -60,8 +59,8 @@ const FoodCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

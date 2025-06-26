@@ -1,12 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import school_image from "../assests/school.jpg";
 import Note from "./note";
 const institutions = [
   {
     id: 1,
     name: "Online Skill Development",
-    image: school_image,
+    image: '/assests/school.jpg',
     location: "Online",
     Discounts: {
       d1: "100+Free Courses with Certigication",
@@ -18,7 +17,7 @@ const institutions = [
   {
     id: 2,
     name: "******** School",
-    image: school_image,
+    image: '/assests/school.jpg',
     location: "coming Soon",
     Discounts: {
       d1: "100+Free Courses with Certigication",
@@ -30,7 +29,7 @@ const institutions = [
   {
     id: 3,
     name: "******* Degree College",
-    image: school_image,
+    image: '/assests/school.jpg',
     location: "Online",
     Discounts: {
       d1: "100+Free Courses with Certigication",
@@ -41,7 +40,7 @@ const institutions = [
   {
     id: 4,
     name: "******* Inter College",
-    image: school_image,
+    image: '/assests/school.jpg',
     location: "Online",
     Discounts: {
       d1: "100+Free Courses with Certigication",
@@ -52,7 +51,7 @@ const institutions = [
   {
     id: 5,
     name: "****** Coaching Center",
-    image: school_image,
+    image: '/assests/school.jpg',
     location: "Online",
     Discounts: {
       d1: "100+Free Courses with Certigication",
@@ -80,8 +79,8 @@ const EducationCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

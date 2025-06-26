@@ -1,14 +1,13 @@
 // src/components/BarPage.jsx
 import React, { useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import bar from '../assests/bar.webp'; 
 import Note from './note';
 
 const barServices = [
     {
         id: 1,
         name: "Sri Vinayaka Bar & Restaurant",
-        image: bar, 
+        image: '/assests/bar.webp',
         address: "Gopal Nagar, Sircilla",
         Phone: "7799663223",
         offers: [
@@ -35,8 +34,7 @@ const BarPage = () => {
 
     return (
         <motion.div
-            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-            initial="hidden"
+            className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"            initial="hidden"
             animate="visible"
             variants={sectionVariants}
         >
@@ -78,7 +76,7 @@ const BarPage = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5 }}
-                                onError={(e) => { e.target.onerror = null; e.target.src = bar; }}
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/bar.webp'; }}
                             />
                         </div>
                         {/* Content section: Uses flex properties to arrange text and button */}

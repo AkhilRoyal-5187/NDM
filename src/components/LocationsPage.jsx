@@ -9,8 +9,8 @@ const LocationsPage = () => {
   };
 
   return (
-    <div className="p-8 text-center">
-      <h1 className="text-3xl font-bold mb-6">Our Services Available in the Following Locations</h1>
+    <div className="p-8 text-center bg-gray-900">
+      <h1 className="text-3xl font-bold mb-6 text-white">Our Services Available in the Following Locations</h1>
       <div className="flex flex-col items-center gap-4">
         <button
           onClick={handleSiricillaClick}

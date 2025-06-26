@@ -1,14 +1,13 @@
 // src/components/HospitalCards.jsx
 import React from "react";
 import { motion } from "framer-motion";
-import travel_img from "../assests/travels.jpg";
 import Note from "./note";
 
 const Travel = [
   {
     id: 1,
     name: "Sircilla Travels",
-    image: travel_img,
+    image: '/assests/travels.jpg',
     address: "Old Bus Stand",
 
     Discounts: {
@@ -21,7 +20,7 @@ const Travel = [
   {
     id: 2,
     name: "Holiday Plannerz",
-    image: travel_img,
+    image: '/assests/travels.jpg',
     address: "Main Road",
     distance: "5.8 km",
     Discounts: {
@@ -35,7 +34,7 @@ const Travel = [
   {
     id: 3,
     name: "City Cab Services",
-    image: travel_img,
+    image: '/assests/travels.jpg',
     address: "Gandhi Nagar",
     distance: "10.2 km",
     Discounts: {
@@ -65,8 +64,8 @@ const TravelCards = () => {
 
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 max-w-4xl mx-auto"
-      initial="hidden"
+    className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+    initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >

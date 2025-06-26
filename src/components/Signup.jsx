@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import doctorImage from '../assests/doctor.jpg';
 
 function Signup() {
   const [name, setName] = useState('');
@@ -59,7 +58,7 @@ function Signup() {
           variants={imageVariants}
         >
           <motion.img
-            src={doctorImage}
+            src="/assests/doctor.jpg"
             alt="Doctor Illustration"
             className="w-full max-w-xs mx-auto object-contain drop-shadow-xl"
             whileHover={{ scale: 1.05 }}

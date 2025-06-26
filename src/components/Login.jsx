@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import doctorImage from '../assests/doctor1.png';
 
 const API_URL = process.env.NODE_ENV === 'production' 
   ? 'https://discount-mithra-3.onrender.com'
@@ -85,7 +84,7 @@ function Login() {
           variants={imageVariants}
         >
           <motion.img
-            src={doctorImage}
+            src="/assests/doctor1.png"
             alt="Doctor Illustration"
             className="w-full max-w-xs mx-auto object-contain drop-shadow-xl"
             whileHover={{ scale: 1.05 }}
