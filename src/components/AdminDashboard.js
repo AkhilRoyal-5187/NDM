@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 // Configure axios defaults
 const API_URL = process.env.NODE_ENV === 'production' 
   ? 'https://discount-mithra-3.onrender.com'
-  : ''; 
+  : 'http://localhost:3000'; // Ensure localhost base URL is set for dev
 
 axios.defaults.baseURL = API_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [errorState, setErrorState] = useState(null);
   const router = useRouter();
-  const [isLoggingOut, _setIsLoggingOut] = useState(false); 
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // Renamed _setIsLoggingOut
   const [editingId, setEditingId] = useState(null);
   const [editedUser, setEditedUser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,12 +42,12 @@ const AdminDashboard = () => {
     idNo: '',
     cardHolderName: '',
     familyName: '',
-    Family2: '',
-    Family3: '',
-    Family4: '',
-    Family5: '',
+    Family2: '', // Ensure consistent casing
+    Family3: '', // Ensure consistent casing
+    Family4: '', // Ensure consistent casing
+    Family5: '', // Ensure consistent casing
     phoneNumber: '',
-    password: '', // <--- NEW: Add password field for new user
+    password: '', 
     validTill: ''
   });
 
@@ -80,7 +80,7 @@ const AdminDashboard = () => {
   }, [fetchUsers]);
 
   const handleLogout = () => {
-    _setIsLoggingOut(true);
+    setIsLoggingOut(true); // Corrected state setter
     sessionStorage.removeItem('adminToken');
     sessionStorage.removeItem('adminInfo');
     router.push('/admin/login');
@@ -89,9 +89,17 @@ const AdminDashboard = () => {
   const handleEditClick = (user) => {
     setEditingId(user._id);
     const formattedValidTill = user.validTill ? new Date(user.validTill).toISOString().split('T')[0] : '';
-    // When editing, we don't display or manage the password field here directly,
-    // as it's implicitly the phone number.
-    setEditedUser({ ...user, validTill: formattedValidTill }); 
+    
+    // Ensure all fields are correctly initialized from the user object with proper casing
+    setEditedUser({ 
+      ...user, 
+      validTill: formattedValidTill,
+      // Ensure these match your schema's property names exactly (e.g., Family2, Family3)
+      Family2: user.Family2 || '',
+      Family3: user.Family3 || '',
+      Family4: user.Family4 || '',
+      Family5: user.Family5 || ''
+    }); 
   };
 
   const handleInputChange = (field, value) => {
@@ -106,10 +114,27 @@ const AdminDashboard = () => {
     if (!editedUser) return;
     try {
       setIsSaving(true);
-      // DO NOT send a password field directly from here for edits.
-      // The `User` model's pre-save hook will handle re-hashing the phoneNumber if it changes.
-      const response = await axios.put(`/api/users/${userId}`, editedUser);
+      // Construct the data to send. Do NOT send _id or createdAt in the payload.
+      // Send only the fields that can be updated.
+      const updatePayload = {
+        idNo: editedUser.idNo,
+        cardHolderName: editedUser.cardHolderName,
+        familyName: editedUser.familyName,
+        Family2: editedUser.Family2,
+        Family3: editedUser.Family3,
+        Family4: editedUser.Family4,
+        Family5: editedUser.Family5,
+        phoneNumber: editedUser.phoneNumber,
+        validTill: editedUser.validTill,
+        // Password is automatically managed by the backend on phoneNumber change.
+        // Do not send a 'password' field from here unless explicitly editing it.
+      };
+
+      const response = await axios.put(`/api/users/${userId}`, updatePayload);
+      
+      // Update the users array with the response data (which should be the updated user)
       setUsers(users.map(user => (user._id === userId ? response.data : user)));
+      
       setEditingId(null);
       setEditedUser(null);
       alert('User updated successfully!');
@@ -117,6 +142,8 @@ const AdminDashboard = () => {
       console.error('Update error:', error);
       if (axios.isAxiosError(error) && error.response) {
          alert(`Failed to update user: ${error.response.data.message || 'Unknown error'}`);
+         // Log the full error response from the server for debugging
+         console.error('Server error response:', error.response.data);
       } else {
          alert('Failed to update user. Check console for details.');
       }
@@ -149,21 +176,23 @@ const AdminDashboard = () => {
       const newState = { ...prev, [field]: value };
       // If phone number is being set/changed, automatically set password to match it
       if (field === 'phoneNumber') {
-        newState.password = value; // <--- IMPORTANT: Set password to be phone number
+        newState.password = value; 
       }
       return newState;
     });
   };
 
   const handleSaveNewUser = async () => {
-    if (!newUser.idNo || !newUser.cardHolderName || !newUser.familyName || !newUser.phoneNumber || !newUser.validTill || !newUser.password) { // <-- NEW: Check password
-      alert('ID No, Card Holder Name, Family Name, Phone Number, Password, and Valid Till are required fields.');
+    if (!newUser.idNo || !newUser.cardHolderName || !newUser.familyName || !newUser.phoneNumber || !newUser.validTill) {
+      // Password check might not be strictly needed here if it's auto-filled from phoneNumber and backend handles hashing
+      alert('ID No, Card Holder Name, Family Name, Phone Number, and Valid Till are required fields.');
       return;
     }
     try {
       setIsSaving(true);
       const response = await axios.post('/api/users', newUser);
-      setUsers(prevUsers => [response.data, ...prevUsers]);
+      // Prepend the new user to the list
+      setUsers(prevUsers => [response.data, ...prevUsers]); 
       setNewUser({
         idNo: '',
         cardHolderName: '',
@@ -173,15 +202,17 @@ const AdminDashboard = () => {
         Family4: '',
         Family5: '',
         phoneNumber: '',
-        password: '', // Clear password field after saving
+        password: '', 
         validTill: ''
       });
       setIsAddingNewUser(false);
       alert('User added successfully!');
     } catch (error) {
       console.error('Create user error:', error);
-      if (error.response) {
+      if (axios.isAxiosError(error) && error.response) {
         alert(`Failed to create user: ${error.response.data.message || 'Unknown error'}`);
+        // Log the full error response from the server for debugging
+        console.error('Server error response:', error.response.data);
       } else {
         alert('Failed to create user. Check console for details.');
       }
@@ -192,11 +223,30 @@ const AdminDashboard = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    try {
+        // Attempt to parse as ISO string first, then as a regular date
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            // If parsing failed, try to construct from parts if it's just YYYY-MM-DD
+            const [year, month, day] = dateString.split('-').map(Number);
+            if (year && month && day) {
+                return new Date(year, month - 1, day).toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+            return 'Invalid Date';
+        }
+        return date.toLocaleDateString('en-IN', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    } catch (e) {
+        console.error("Error formatting date:", dateString, e);
+        return 'Error';
+    }
   };
 
   return (
@@ -234,9 +284,9 @@ const AdminDashboard = () => {
           <div className="mt-10 p-6 border border-gray-700 rounded-lg">
             <h3 className="font-bold text-lg mb-4 text-white">Create a New User</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Common fields */}
+              {/* Common fields for New User */}
               {['idNo', 'cardHolderName', 'familyName', 'Family2', 'Family3', 'Family4', 'Family5', 'phoneNumber', 'validTill'].map(field => (
-                <div key={field}>
+                <div key={`new-user-${field}`}> {/* Added more specific key */}
                   <label htmlFor={`new-${field}`} className="block mb-1 text-sm font-medium text-gray-400 capitalize">
                     {field.replace(/([A-Z])/g, ' $1').trim()}
                   </label>
@@ -256,9 +306,9 @@ const AdminDashboard = () => {
                 </label>
                 <input
                   id="new-password"
-                  type="text" // Can be 'text' to show the phone number, or 'password' to hide it. I'll keep it as text to make it clear it's the phone number.
+                  type="text" 
                   value={newUser.password}
-                  disabled // Disable direct editing since it's tied to phone number
+                  disabled 
                   className="bg-gray-800 text-white px-3 py-2 rounded-md w-full border border-gray-600 focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -362,48 +412,48 @@ const AdminDashboard = () => {
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.Family2 || ''} // Corrected 'family2' to 'Family2' based on state
+                            value={editedUser?.Family2 || ''} 
                             onChange={(e) => handleInputChange('Family2', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.Family2
+                          user.Family2 // Corrected casing
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.Family3 || ''} // Corrected 'family3' to 'Family3' based on state
+                            value={editedUser?.Family3 || ''} 
                             onChange={(e) => handleInputChange('Family3', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.Family3
+                          user.Family3 // Corrected casing
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.Family4 || ''} // Corrected 'family4' to 'Family4' based on state
+                            value={editedUser?.Family4 || ''} 
                             onChange={(e) => handleInputChange('Family4', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.Family4
+                          user.Family4 // Corrected casing
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.Family5 || ''} // Corrected 'family5' to 'Family5' based on state
+                            value={editedUser?.Family5 || ''} 
                             onChange={(e) => handleInputChange('Family5', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.Family5
+                          user.Family5 // Corrected casing
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
@@ -418,7 +468,6 @@ const AdminDashboard = () => {
                           user.phoneNumber
                         )}
                       </td>
-                      {/* Removed explicit password field for editing, as it's handled by phoneNumber change */}
                       <td className="px-6 py-3 text-white">
                         {formatDate(user.createdAt)}
                       </td>
@@ -445,7 +494,10 @@ const AdminDashboard = () => {
                               {isSaving ? '...' : 'Save'}
                             </button>
                             <button
-                              onClick={() => setEditingId(null)}
+                              onClick={() => {
+                                setEditingId(null);
+                                setEditedUser(null); // Clear edited user state on cancel
+                              }}
                               className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm"
                             >
                               Cancel
