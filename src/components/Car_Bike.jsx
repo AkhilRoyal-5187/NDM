@@ -2,7 +2,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import carService_img from "../assests/car_repair.avif";
 import Note from "./note";
+import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { useRouter } from 'next/navigation'; // Import useRouter for redirection
+
 const CarServices = [
+  // ... (Your existing CarServices data) ...
   {
     id: 1,
     name: "Car Repair Pro",
@@ -14,7 +18,7 @@ const CarServices = [
       d2: "10% on spares",
       d3: "10% on packages",
     },
-    phone: "7799663223",
+    phone: "7799663223", // This is the service provider's phone number
   },
   {
     id: 2,
@@ -73,6 +77,9 @@ const CarServices = [
 ];
 
 const CarServiceCards = () => {
+  const { isLoggedIn, userPhoneNumber, login } = useAuth(); // Destructure from the auth context
+  const router = useRouter();
+
   // Animation variants
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -86,6 +93,39 @@ const CarServiceCards = () => {
   const cardVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.95 },
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6 } },
+  };
+
+  const handleBookNow = (serviceProviderPhone) => {
+    if (isLoggedIn) {
+      // User is logged in, now you can perform the booking action.
+      // This will likely involve making an API call to your backend.
+      // For now, let's just log it:
+      console.log(
+        `User ${userPhoneNumber} is trying to book service with provider ${serviceProviderPhone}`
+      );
+      alert(`Booking request sent to ${serviceProviderPhone} by ${userPhoneNumber}. (This is a placeholder action)`);
+
+      // TODO: Implement actual API call to your backend for booking
+      // Example:
+      // axios.post('/api/book-service', {
+      //   userId: userPhoneNumber, // User's ID is their phone number
+      //   serviceProviderPhone: serviceProviderPhone,
+      //   serviceName: services.name, // Pass relevant details
+      //   // ... other booking details
+      // })
+      // .then(response => {
+      //   alert('Booking successful!');
+      // })
+      // .catch(error => {
+      //   console.error('Booking failed:', error);
+      //   alert('Booking failed. Please try again.');
+      // });
+
+    } else {
+      // User is not logged in, redirect to login page
+      alert("Please log in to book this service.");
+      router.push('/login'); // Assuming you have a /login page for users
+    }
   };
 
   return (
@@ -105,9 +145,9 @@ const CarServiceCards = () => {
       </motion.h1>
       <Note/>
       <div className="space-y-6">
-        {CarServices.map((services) => (
+        {CarServices.map((service) => ( // Changed 'services' to 'service' for clarity in map
           <motion.div
-            key={services.id}
+            key={service.id}
             variants={cardVariants}
             whileHover={{
               scale: 1.03,
@@ -119,8 +159,8 @@ const CarServiceCards = () => {
             {/* Left Section */}
             <div className="flex items-center gap-5">
               <motion.img
-                src={services.image}
-                alt={services.name}
+                src={service.image}
+                alt={service.name}
                 className="w-24 h-24 object-cover rounded-md"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -128,20 +168,20 @@ const CarServiceCards = () => {
               />
               <div>
                 <h3 className="font-bold text-xl text-white">
-                  {services.name}
+                  {service.name}
                 </h3>
                 <p className="text-gray-300 text-sm">
-                  location : {services.location}
+                  location : {service.location}
                 </p>
                 <p className="text-l font-bold">Discounts:</p>
                 <ul className="text-gray-400 text-xs mt-1 list-disc ml-4">
-                  {Object.values(services.Discounts).map((discount, idx) => (
+                  {Object.values(service.Discounts).map((discount, idx) => (
                     <li key={idx}>{discount}</li>
                   ))}
                 </ul>
-                {services.phone && (
+                {service.phone && (
                   <p className="text-gray-400 text-xs mt-1">
-                    📞 {services.phone}
+                    📞 {service.phone}
                   </p>
                 )}
               </div>
@@ -149,6 +189,7 @@ const CarServiceCards = () => {
 
             {/* Book Now Button */}
             <motion.button
+              onClick={() => handleBookNow(service.phone)} // Pass the service provider's phone
               className="bg-gradient-to-r from-blue-400 to-purple-400 text-white text-sm px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}

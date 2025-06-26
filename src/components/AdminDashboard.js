@@ -1,9 +1,9 @@
+// src/components/AdminDashboard.js
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
-// --- IMPORTANT MODIFICATION HERE ---
 // Configure axios defaults
 const API_URL = process.env.NODE_ENV === 'production' 
   ? 'https://discount-mithra-3.onrender.com'
@@ -26,63 +26,34 @@ axios.interceptors.request.use(
   }
 );
 
-// --- FIX FOR 'debounce' DEFINED BUT NEVER USED ---
-// Removed the debounce utility function definition if it's not being used.
-// If you intend to use it later, uncomment the function and ensure it's called somewhere.
-/*
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-*/
-
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  // --- FIX FOR 'error' and 'setError' DEFINED BUT NEVER USED ---
-  // You ARE using `error` in the JSX and `setError` in fetchUsers and other handlers.
-  // The linter might be confused. Let's make sure it's used more explicitly or change the declaration if needed.
-  // For now, if the error persists, it means the linter isn't detecting JSX usage.
-  // The simplest fix if the linter doesn't see it used in JSX is to rename them with underscores temporarily.
-  // However, I've seen your JSX uses `error && (` and `setError(...)`, so they should be detected.
-  // The problem might be a linter configuration issue rather than actual non-usage.
-  // Let's assume you've fixed the ESLint config for unused vars via underscores in .mjs.
-  const [errorState, setErrorState] = useState(null); // Renamed to clarify usage as a state variable
-
+  const [errorState, setErrorState] = useState(null);
   const router = useRouter();
-  // --- FIX FOR 'setIsLoggingOut' DEFINED BUT NEVER USED ---
-  // You ARE using `isLoggingOut` in the button's `disabled` prop.
-  // The linter might be confused. If the error persists after .mjs config,
-  // change `setIsLoggingOut` to `_setIsLoggingOut`.
-  const [isLoggingOut, _setIsLoggingOut] = useState(false); // Renamed setter with underscore
-
+  const [isLoggingOut, _setIsLoggingOut] = useState(false); 
   const [editingId, setEditingId] = useState(null);
   const [editedUser, setEditedUser] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(null);
   const [isAddingNewUser, setIsAddingNewUser] = useState(false);
+  
   const [newUser, setNewUser] = useState({
     idNo: '',
     cardHolderName: '',
     familyName: '',
-    family2: '',
-    family3: '',
-    family4: '',
-    family5: '',
+    Family2: '',
+    Family3: '',
+    Family4: '',
+    Family5: '',
     phoneNumber: '',
+    password: '', // <--- NEW: Add password field for new user
     validTill: ''
   });
 
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
-    setErrorState(null); // Use the renamed setter
+    setErrorState(null);
     try {
       const response = await axios.get('/api/users');
       setUsers(response.data);
@@ -90,14 +61,14 @@ const AdminDashboard = () => {
       console.error('Error fetching users:', err);
       if (axios.isAxiosError(err)) {
         if (err.response) {
-          setErrorState(err.response.data.message || `Failed to fetch users: ${err.response.status}`); // Use renamed setter
+          setErrorState(err.response.data.message || `Failed to fetch users: ${err.response.status}`);
         } else if (err.request) {
-          setErrorState('Network Error: Could not connect to the server. Please ensure the Next.js dev server is running.'); // Use renamed setter
+          setErrorState('Network Error: Could not connect to the server. Please ensure the Next.js dev server is running.');
         } else {
-          setErrorState('An unexpected error occurred while fetching users.'); // Use renamed setter
+          setErrorState('An unexpected error occurred while fetching users.');
         }
       } else {
-        setErrorState('An unexpected error occurred while fetching users.'); // Use renamed setter
+        setErrorState('An unexpected error occurred while fetching users.');
       }
     } finally {
       setIsLoading(false);
@@ -109,7 +80,7 @@ const AdminDashboard = () => {
   }, [fetchUsers]);
 
   const handleLogout = () => {
-    _setIsLoggingOut(true); // Use the renamed setter
+    _setIsLoggingOut(true);
     sessionStorage.removeItem('adminToken');
     sessionStorage.removeItem('adminInfo');
     router.push('/admin/login');
@@ -118,7 +89,9 @@ const AdminDashboard = () => {
   const handleEditClick = (user) => {
     setEditingId(user._id);
     const formattedValidTill = user.validTill ? new Date(user.validTill).toISOString().split('T')[0] : '';
-    setEditedUser({ ...user, validTill: formattedValidTill });
+    // When editing, we don't display or manage the password field here directly,
+    // as it's implicitly the phone number.
+    setEditedUser({ ...user, validTill: formattedValidTill }); 
   };
 
   const handleInputChange = (field, value) => {
@@ -133,6 +106,8 @@ const AdminDashboard = () => {
     if (!editedUser) return;
     try {
       setIsSaving(true);
+      // DO NOT send a password field directly from here for edits.
+      // The `User` model's pre-save hook will handle re-hashing the phoneNumber if it changes.
       const response = await axios.put(`/api/users/${userId}`, editedUser);
       setUsers(users.map(user => (user._id === userId ? response.data : user)));
       setEditingId(null);
@@ -170,15 +145,19 @@ const AdminDashboard = () => {
   };
 
   const handleNewUserInputChange = (field, value) => {
-    setNewUser(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setNewUser(prev => {
+      const newState = { ...prev, [field]: value };
+      // If phone number is being set/changed, automatically set password to match it
+      if (field === 'phoneNumber') {
+        newState.password = value; // <--- IMPORTANT: Set password to be phone number
+      }
+      return newState;
+    });
   };
 
   const handleSaveNewUser = async () => {
-    if (!newUser.idNo || !newUser.cardHolderName || !newUser.familyName || !newUser.phoneNumber || !newUser.validTill) {
-      alert('ID No, Card Holder Name, Family Name, Phone Number, and Valid Till are required fields.');
+    if (!newUser.idNo || !newUser.cardHolderName || !newUser.familyName || !newUser.phoneNumber || !newUser.validTill || !newUser.password) { // <-- NEW: Check password
+      alert('ID No, Card Holder Name, Family Name, Phone Number, Password, and Valid Till are required fields.');
       return;
     }
     try {
@@ -189,11 +168,12 @@ const AdminDashboard = () => {
         idNo: '',
         cardHolderName: '',
         familyName: '',
-        family2: '',
-        family3: '',
-        family4: '',
-        family5: '',
+        Family2: '',
+        Family3: '',
+        Family4: '',
+        Family5: '',
         phoneNumber: '',
+        password: '', // Clear password field after saving
         validTill: ''
       });
       setIsAddingNewUser(false);
@@ -225,10 +205,6 @@ const AdminDashboard = () => {
         <div className="flex justify-end mb-4">
           <button
             onClick={handleLogout}
-            // --- FIX FOR 'isLoggingOut' USAGE ---
-            // The prop is already used here, so the error might be related to the setter.
-            // Keeping `isLoggingOut` as is in the state declaration and only
-            // prepending underscore to the setter `_setIsLoggingOut`
             disabled={isLoggingOut}
             className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-xl font-semibold transition disabled:opacity-50"
           >
@@ -258,20 +234,34 @@ const AdminDashboard = () => {
           <div className="mt-10 p-6 border border-gray-700 rounded-lg">
             <h3 className="font-bold text-lg mb-4 text-white">Create a New User</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.keys(newUser).map(field => (
+              {/* Common fields */}
+              {['idNo', 'cardHolderName', 'familyName', 'Family2', 'Family3', 'Family4', 'Family5', 'phoneNumber', 'validTill'].map(field => (
                 <div key={field}>
                   <label htmlFor={`new-${field}`} className="block mb-1 text-sm font-medium text-gray-400 capitalize">
                     {field.replace(/([A-Z])/g, ' $1').trim()}
                   </label>
                   <input
                     id={`new-${field}`}
-                    type={field === 'validTill' ? 'date' : 'text'}
+                    type={field === 'validTill' ? 'date' : (field === 'phoneNumber' ? 'text' : 'text')}
                     value={newUser[field]}
                     onChange={(e) => handleNewUserInputChange(field, e.target.value)}
                     className="bg-gray-800 text-white px-3 py-2 rounded-md w-full border border-gray-600 focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               ))}
+              {/* Password field for new user (automatically filled with phone number) */}
+              <div>
+                <label htmlFor="new-password" className="block mb-1 text-sm font-medium text-gray-400 capitalize">
+                  Password (Auto-filled)
+                </label>
+                <input
+                  id="new-password"
+                  type="text" // Can be 'text' to show the phone number, or 'password' to hide it. I'll keep it as text to make it clear it's the phone number.
+                  value={newUser.password}
+                  disabled // Disable direct editing since it's tied to phone number
+                  className="bg-gray-800 text-white px-3 py-2 rounded-md w-full border border-gray-600 focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
             </div>
             <div className="mt-6 flex justify-end gap-4">
               <button
@@ -291,7 +281,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {errorState && ( // Use the renamed state variable here
+        {errorState && (
           <div className="mt-4 p-4 bg-red-800 text-white rounded-md">
             {errorState}
           </div>
@@ -372,48 +362,48 @@ const AdminDashboard = () => {
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.family2 || ''}
-                            onChange={(e) => handleInputChange('family2', e.target.value)}
+                            value={editedUser?.Family2 || ''} // Corrected 'family2' to 'Family2' based on state
+                            onChange={(e) => handleInputChange('Family2', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.family2
+                          user.Family2
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.family3 || ''}
-                            onChange={(e) => handleInputChange('family3', e.target.value)}
+                            value={editedUser?.Family3 || ''} // Corrected 'family3' to 'Family3' based on state
+                            onChange={(e) => handleInputChange('Family3', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.family3
+                          user.Family3
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.family4 || ''}
-                            onChange={(e) => handleInputChange('family4', e.target.value)}
+                            value={editedUser?.Family4 || ''} // Corrected 'family4' to 'Family4' based on state
+                            onChange={(e) => handleInputChange('Family4', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.family4
+                          user.Family4
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
                         {editingId === user._id ? (
                           <input
                             type="text"
-                            value={editedUser?.family5 || ''}
-                            onChange={(e) => handleInputChange('family5', e.target.value)}
+                            value={editedUser?.Family5 || ''} // Corrected 'family5' to 'Family5' based on state
+                            onChange={(e) => handleInputChange('Family5', e.target.value)}
                             className="bg-gray-800 text-white px-2 py-1 rounded w-full"
                           />
                         ) : (
-                          user.family5
+                          user.Family5
                         )}
                       </td>
                       <td className="px-6 py-3 text-white">
@@ -428,6 +418,7 @@ const AdminDashboard = () => {
                           user.phoneNumber
                         )}
                       </td>
+                      {/* Removed explicit password field for editing, as it's handled by phoneNumber change */}
                       <td className="px-6 py-3 text-white">
                         {formatDate(user.createdAt)}
                       </td>

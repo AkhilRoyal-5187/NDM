@@ -1,11 +1,11 @@
 // src/app/api/users/route.js
 import { NextResponse } from 'next/server';
-const connectDB = require('../../../lib/db'); // Adjust path
-const User = require('../../../models/User');   // Adjust path
+import connectDB from '../../../lib/db';
+import User from '../../../models/User';
 
 // GET all users
 export async function GET(_request) {
-  await connectDB(); // Ensure DB connection
+  await connectDB();
 
   try {
     console.log('Fetching all users...');
@@ -26,7 +26,7 @@ export async function GET(_request) {
 
 // Create a new user
 export async function POST(request) {
-  await connectDB(); // Ensure DB connection
+  await connectDB();
 
   try {
     const {
@@ -38,12 +38,12 @@ export async function POST(request) {
       family4,
       family5,
       phoneNumber,
+      password, // <--- ADD THIS LINE TO DESTRUCTURE PASSWORD
       validTill
     } = await request.json(); // Use request.json() for Next.js App Router
 
-    console.log('Creating new user:', { idNo, cardHolderName, phoneNumber });
+    console.log('Creating new user:', { idNo, cardHolderName, phoneNumber, password: '***' }); // Log securely
 
-    // Check for duplicate idNo or phoneNumber
     const existingUser = await User.findOne({ $or: [{ idNo }, { phoneNumber }] });
     if (existingUser) {
       return NextResponse.json(
@@ -64,9 +64,10 @@ export async function POST(request) {
       family4: family4 || '',
       family5: family5 || '',
       phoneNumber,
+      password, // <--- PASS THE DESTRUCTURED PASSWORD HERE
       validTill: new Date(validTill)
     });
-    await user.save();
+    await user.save(); // Mongoose validates, then pre('save') hook hashes
 
     console.log('User created successfully:', user._id);
     return NextResponse.json(user, { status: 201 });
