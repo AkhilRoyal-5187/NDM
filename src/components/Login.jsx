@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import doctorImage from '../assests/doctor1.png';
-import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.NODE_ENV === 'production' 
   ? 'https://discount-mithra-3.onrender.com'
@@ -19,8 +18,6 @@ function Login() {
   const [error, setError] = useState('');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
-  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,12 +35,8 @@ function Login() {
 
       console.log("Login API response received:", res.data);
 
-      // --- CRITICAL CHANGE HERE: Check res.data.success directly ---
-      if (res.data && res.data.success) { // <-- NOW CHECKING THE EXPLICIT SUCCESS FLAG
+      if (res.data && res.data.message === 'Login successful') {
         console.log("Login successful, calling auth context login...");
-        login(phoneNumber);
-        console.log("Auth context updated.");
-
         console.log("Type of router:", typeof router);
         console.log("Router object:", router);
         console.log("Attempting router.replace with path:", '/services');
@@ -51,7 +44,6 @@ function Login() {
         router.replace('/services');
         console.log("router.replace called (this log might not show if navigation is immediate).");
       } else {
-        // This 'else' block will now only run if success is false or data is malformed
         console.log("Login failed according to API (or unexpected response):", res.data.message || res.data);
         setError(res.data.message || 'Login failed. Please try again.');
       }
@@ -63,8 +55,6 @@ function Login() {
       console.log("Login process finished, loading set to false.");
     }
   };
-
-  // ... (rest of the component's animation variants and JSX remains the same)
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },

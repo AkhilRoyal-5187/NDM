@@ -1,9 +1,9 @@
 // src/app/api/admin/login/route.js
 import { NextResponse } from 'next/server';
-const connectDB = require('../../../../lib/db'); // Adjust path if needed
-const Admin = require('../../../../models/Admin'); // Adjust path if needed
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+import connectDB from '../../../../lib/db.js';
+import Admin from '../../../../models/Admin.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request) {
   await connectDB(); // Ensure DB connection before handling request
@@ -17,6 +17,24 @@ export async function POST(request) {
     console.log('Frontend provided password (length):', password.length); // DO NOT log the password itself
     // --- ADDED CONSOLE.LOGS END ---
 
+    // Hardcoded credentials for testing (remove in production)
+    const HARDCODED_USERNAME = 'admin';
+    const HARDCODED_PASSWORD = 'password123';
+
+    // Check hardcoded credentials first
+    if (username === HARDCODED_USERNAME && password === HARDCODED_PASSWORD) {
+      console.log(`Hardcoded login SUCCESS for user: '${username}'.`);
+      return NextResponse.json(
+        {
+          message: 'Login successful',
+          token: 'demo-admin-token',
+          admin: { id: 'demo-admin-id', username: username, role: 'admin' },
+        },
+        { status: 200 }
+      );
+    }
+
+    // If not hardcoded, try database lookup
     const admin = await Admin.findOne({ username });
 
     if (!admin) {
