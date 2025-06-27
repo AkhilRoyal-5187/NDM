@@ -1,17 +1,18 @@
-import React from "react";
+// src/components/CarServiceCards.jsx
+"use client";
+
+import React, { useState, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import Note from "./note";
 import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 import { useRouter } from 'next/navigation'; // Import useRouter for redirection
 
 const CarServices = [
-  // ... (Your existing CarServices data) ...
   {
     id: 1,
     name: "Car Repair Pro",
     image: "/assests/car_repair.avif",
     location: "Old Petrol Bunk",
-
     Discounts: {
       d1: "20% on labor",
       d2: "10% on spares",
@@ -24,7 +25,6 @@ const CarServices = [
     name: "Bike Repair Hub",
     image: "/assests/car_repair.avif",
     location: " Near College",
-
     Discounts: {
       d1: "Free checkup",
       d2: " Labor charge - 15%",
@@ -76,10 +76,65 @@ const CarServices = [
 ];
 
 const CarServiceCards = () => {
-  const { isLoggedIn, userPhoneNumber, login } = useAuth(); // Destructure from the auth context
+  const { isLoggedIn, userPhoneNumber } = useAuth(); // Destructure isLoggedIn and userPhoneNumber
   const router = useRouter();
 
-  // Animation variants
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const [bookingStatus, setBookingStatus] = useState(null); // 'idle', 'loading', 'success', 'error'
+  const [bookingMessage, setBookingMessage] = useState(''); // Message to display to the user
+
+  const handleBookNow = async (serviceName, servicePhoneNumber) => {
+    if (!isLoggedIn) {
+      alert("Please log in to book this service.");
+      router.push('/login'); // Redirect to login page
+      return; // Stop execution if not logged in
+    }
+
+    setBookingStatus('loading');
+    setBookingMessage('Sending booking request...');
+
+    // Now userPhoneNumber is directly from AuthContext
+    const finalUserPhoneNumber = userPhoneNumber; // Use the actual user's phone number
+    const finalServicePhoneNumber = servicePhoneNumber; // Service provider's phone number
+
+    if (!finalServicePhoneNumber) {
+        setBookingStatus('error');
+        setBookingMessage(`Booking failed: Phone number for ${serviceName} is missing.`);
+        return;
+    }
+
+    try {
+      const response = await fetch('/api/book-service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serviceName, servicePhoneNumber: finalServicePhoneNumber, userName: "Logged In User", userPhoneNumber: finalUserPhoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBookingStatus('success');
+        setBookingMessage(`Booking for "${serviceName}" confirmed! A confirmation SMS has been sent to you. The service provider will contact you shortly.`);
+        setTimeout(() => {
+          setBookingStatus(null);
+          setBookingMessage('');
+        }, 7000);
+      } else {
+        setBookingStatus('error');
+        setBookingMessage(`Failed to book "${serviceName}": ${data.message || 'Unknown error'}.`);
+      }
+    } catch (error) {
+      console.error('Error during booking:', error);
+      setBookingStatus('error');
+      setBookingMessage(`An error occurred while booking "${serviceName}". Please try again.`);
+    }
+  };
+
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -94,42 +149,10 @@ const CarServiceCards = () => {
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6 } },
   };
 
-  const handleBookNow = (serviceProviderPhone) => {
-    if (isLoggedIn) {
-      // User is logged in, now you can perform the booking action.
-      // This will likely involve making an API call to your backend.
-      // For now, let's just log it:
-      console.log(
-        `User ${userPhoneNumber} is trying to book service with provider ${serviceProviderPhone}`
-      );
-      alert(`Booking request sent to ${serviceProviderPhone} by ${userPhoneNumber}. (This is a placeholder action)`);
-
-      // TODO: Implement actual API call to your backend for booking
-      // Example:
-      // axios.post('/api/book-service', {
-      //   userId: userPhoneNumber, // User's ID is their phone number
-      //   serviceProviderPhone: serviceProviderPhone,
-      //   serviceName: services.name, // Pass relevant details
-      //   // ... other booking details
-      // })
-      // .then(response => {
-      //   alert('Booking successful!');
-      // })
-      // .catch(error => {
-      //   console.error('Booking failed:', error);
-      //   alert('Booking failed. Please try again.');
-      // });
-
-    } else {
-      // User is not logged in, redirect to login page
-      alert("Please log in to book this service.");
-      router.push('/login'); // Assuming you have a /login page for users
-    }
-  };
-
   return (
     <motion.div
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"      initial="hidden"
+      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
+      initial="hidden"
       animate="visible"
       variants={sectionVariants}
     >
@@ -142,8 +165,24 @@ const CarServiceCards = () => {
         Car and Bike Services in Sircilla
       </motion.h1>
       <Note/>
+
+      {/* Booking Status Message */}
+      {bookingMessage && (
+          <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-3 rounded-md text-center text-sm font-medium ${
+                  bookingStatus === 'success' ? 'bg-green-500 text-white' :
+                  bookingStatus === 'error' ? 'bg-red-500 text-white' :
+                  'bg-blue-500 text-white'
+              } max-w-xl mx-auto mb-4`}
+          >
+              {bookingMessage}
+          </motion.div>
+      )}
+
       <div className="space-y-6">
-        {CarServices.map((service) => ( // Changed 'services' to 'service' for clarity in map
+        {CarServices.map((service) => (
           <motion.div
             key={service.id}
             variants={cardVariants}
@@ -163,6 +202,7 @@ const CarServiceCards = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
+                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/car_repair.avif'; }} // Fallback image
               />
               <div>
                 <h3 className="font-bold text-xl text-white">
@@ -187,12 +227,13 @@ const CarServiceCards = () => {
 
             {/* Book Now Button */}
             <motion.button
-              onClick={() => handleBookNow(service.phone)} // Pass the service provider's phone
+              onClick={() => handleBookNow(service.name, service.phone)} // Pass service name and phone
               className="bg-gradient-to-r from-blue-400 to-purple-400 text-white text-sm px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              disabled={bookingStatus === 'loading'} // Disable button during loading
             >
-              Book Now
+              {bookingStatus === 'loading' ? 'Booking...' : 'Book Now'}
             </motion.button>
           </motion.div>
         ))}

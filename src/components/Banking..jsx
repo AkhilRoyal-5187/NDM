@@ -1,4 +1,7 @@
-import React from "react";
+// src/components/BankingCards.jsx
+"use client"; // This component runs on the client side
+
+import React, { useState, useLayoutEffect } from "react"; // Import useState and useLayoutEffect
 import { motion } from "framer-motion";
 import Note from "./note"; // Assuming Note.js is in the same directory
 
@@ -42,6 +45,58 @@ const Banking = [
 ];
 
 const BankingCards = () => {
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const [bookingStatus, setBookingStatus] = useState(null); // 'idle', 'loading', 'success', 'error'
+  const [bookingMessage, setBookingMessage] = useState(''); // Message to display to the user
+
+  const handleBookNow = async (serviceName, servicePhoneNumber) => {
+    setBookingStatus('loading');
+    setBookingMessage('Sending booking request...');
+
+    // --- IMPORTANT: Replace with actual logged-in user data ---
+    const userName = "Praveen Makka"; // Placeholder for logged-in user's name
+    const userPhoneNumber = "+918985114785"; // Placeholder for logged-in user's phone number
+                                             // Ensure this is a VERIFIED number in your Twilio trial account for testing.
+    // --- End of IMPORTANT section ---
+
+    if (!servicePhoneNumber) {
+        setBookingStatus('error');
+        setBookingMessage(`Booking failed: Phone number for ${serviceName} is missing.`);
+        return;
+    }
+
+    try {
+      const response = await fetch('/api/book-service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serviceName, servicePhoneNumber, userName, userPhoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBookingStatus('success');
+        setBookingMessage(`Booking for "${serviceName}" confirmed! A confirmation SMS has been sent to you. The bank representative will contact you shortly.`);
+        setTimeout(() => {
+          setBookingStatus(null);
+          setBookingMessage('');
+        }, 7000);
+      } else {
+        setBookingStatus('error');
+        setBookingMessage(`Failed to book "${serviceName}": ${data.message || 'Unknown error'}.`);
+      }
+    } catch (error) {
+      console.error('Error during booking:', error);
+      setBookingStatus('error');
+      setBookingMessage(`An error occurred while booking "${serviceName}". Please try again.`);
+    }
+  };
+
   // Animation variants
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -59,8 +114,7 @@ const BankingCards = () => {
 
   return (
     <motion.div
-      // REMOVED: max-w-4xl mx-auto
-      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full" // ADDED: w-full
+      className="bg-gray-900 min-h-screen text-white p-6 space-y-8 w-full"
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -74,8 +128,24 @@ const BankingCards = () => {
         Banking in Sircilla
       </motion.h1>
       <Note/>
+
+      {/* Booking Status Message Display */}
+      {bookingMessage && (
+          <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-3 rounded-md text-center text-sm font-medium ${
+                  bookingStatus === 'success' ? 'bg-green-500 text-white' :
+                  bookingStatus === 'error' ? 'bg-red-500 text-white' :
+                  'bg-blue-500 text-white'
+              } max-w-xl mx-auto mb-4`}
+          >
+              {bookingMessage}
+          </motion.div>
+      )}
+
       {/* Container for cards - add max-width here to control inner content */}
-      <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0"> {/* Added max-w-4xl, mx-auto, and responsive padding */}
+      <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0">
         {Banking.map((banks) => (
           <motion.div
             key={banks.id}
@@ -96,6 +166,7 @@ const BankingCards = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
+                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/bank.jpg'; }} // Fallback image
               />
               <div>
                 <h3 className="font-bold text-xl text-white">{banks.name}</h3>
@@ -119,8 +190,10 @@ const BankingCards = () => {
               className="bg-gradient-to-r from-blue-400 to-purple-400 text-white text-sm px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => handleBookNow(banks.name, banks.phone)} // Call handler with service details
+              disabled={bookingStatus === 'loading'} // Disable button during loading
             >
-              Book Now
+              {bookingStatus === 'loading' ? 'Booking...' : 'Book Now'} {/* Dynamic button text */}
             </motion.button>
           </motion.div>
         ))}

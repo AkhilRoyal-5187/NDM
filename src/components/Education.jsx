@@ -1,6 +1,9 @@
-import React from "react";
+// src/components/Education.jsx (or EducationCards.jsx, based on your file naming)
+"use client";
+import React, { useState, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import Note from "./note";
+
 const institutions = [
   {
     id: 1,
@@ -36,6 +39,7 @@ const institutions = [
       d2: "100+Free Courses with Certigication",
       d3: "Packages - 35%",
     },
+    phone: "7799663223", // Added phone for consistency, assuming a default if not present
   },
   {
     id: 4,
@@ -47,6 +51,7 @@ const institutions = [
       d2: "100+Free Courses with Certigication",
       d3: "Packages - 35%",
     },
+    phone: "7799663223", // Added phone for consistency, assuming a default if not present
   },
   {
     id: 5,
@@ -58,11 +63,56 @@ const institutions = [
       d2: "100+Free Courses with Certigication",
       d3: "Packages - 35%",
     },
+    phone: "7799663223", // Added phone for consistency, assuming a default if not present
   },
 ];
 
-const EducationCards = () => {
-  // Animation variants
+const EducationCards = () => { // Original component name was EducationCards, but error showed Education.jsx. Keeping EducationCards as the component name.
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const [bookingStatus, setBookingStatus] = useState(null);
+  const [bookingMessage, setBookingMessage] = useState('');
+
+  const handleBookNow = async (serviceName, servicePhoneNumber) => {
+    setBookingStatus('loading');
+    setBookingMessage('Sending booking request...');
+
+    const userName = "Praveen Makka";
+    const userPhoneNumber = "+918985114785";
+
+    const finalServicePhoneNumber = servicePhoneNumber || "7799663223";
+
+    try {
+      const response = await fetch('/api/book-service', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serviceName, servicePhoneNumber: finalServicePhoneNumber, userName, userPhoneNumber }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setBookingStatus('success');
+        setBookingMessage(`Booking for "${serviceName}" confirmed! A confirmation SMS has been sent to you. The institution will contact you shortly.`);
+        setTimeout(() => {
+          setBookingStatus(null);
+          setBookingMessage('');
+        }, 7000);
+      } else {
+        setBookingStatus('error');
+        setBookingMessage(`Failed to book "${serviceName}": ${data.message || 'Unknown error'}.`);
+      }
+    } catch (error) {
+      console.error('Error during booking:', error);
+      setBookingStatus('error');
+      setBookingMessage(`An error occurred while booking "${serviceName}". Please try again.`);
+    }
+  };
+
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -93,6 +143,22 @@ const EducationCards = () => {
         Educational Institutions in Sircilla
       </motion.h1>
       <Note />
+
+      {/* Booking Status Message */}
+      {bookingMessage && (
+          <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`p-3 rounded-md text-center text-sm font-medium ${
+                  bookingStatus === 'success' ? 'bg-green-500 text-white' :
+                  bookingStatus === 'error' ? 'bg-red-500 text-white' :
+                  'bg-blue-500 text-white'
+              } max-w-xl mx-auto mb-4`}
+          >
+              {bookingMessage}
+          </motion.div>
+      )}
+
       <div className="space-y-6">
         {institutions.map((institution) => (
           <motion.div
@@ -114,6 +180,7 @@ const EducationCards = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
+                onError={(e) => { e.target.onerror = null; e.target.src = '/assests/school.jpg'; }}
               />
               <div>
                 <h3 className="font-bold text-xl text-white">
@@ -128,9 +195,13 @@ const EducationCards = () => {
                     <li key={idx}>{discount}</li>
                   ))}
                 </ul>
-                {institution.phone && (
+                {institution.phone ? (
                   <p className="text-gray-400 text-xs mt-1">
                     📞 {institution.phone}
+                  </p>
+                ) : (
+                  <p className="text-gray-400 text-xs mt-1">
+                    📞 Phone number not available directly.
                   </p>
                 )}
               </div>
@@ -141,8 +212,10 @@ const EducationCards = () => {
               className="bg-gradient-to-r from-blue-400 to-purple-400 text-white text-sm px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => handleBookNow(institution.name, institution.phone)} // Corrected comment syntax
+              disabled={bookingStatus === 'loading'}
             >
-              Book Now
+              {bookingStatus === 'loading' ? 'Booking...' : 'Book Now'}
             </motion.button>
           </motion.div>
         ))}
@@ -151,4 +224,4 @@ const EducationCards = () => {
   );
 };
 
-export default EducationCards;
+export default EducationCards; // Exporting as EducationCards
