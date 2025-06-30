@@ -1,31 +1,33 @@
 "use client";
 import React from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link'; // Ensure Link is imported
 import AboutSection from '../components/AboutSection';
 import MembershipSection from '../components/MembershipSection';
 import ContactSection from '../components/ContactSection';
-import { 
-  FaHospital, 
-  FaShoppingBasket, 
-  FaCut, 
-  FaGraduationCap, 
-  FaPlaneDeparture, 
-  FaFilm, 
-  FaDumbbell, 
-  FaGift 
+import {
+  FaHospital,
+  FaShoppingBasket,
+  FaCut,
+  FaGraduationCap,
+  FaPlaneDeparture,
+  FaFilm,
+  FaDumbbell,
+  FaGift
 } from "react-icons/fa";
 import { GiKnifeFork } from "react-icons/gi";
 
 const iconItems = [
-  { bgColor: "bg-red-100", iconColor: "text-red-500", hoverIconColor: "hover:text-red-600", label: "Hospital", Icon: FaHospital },
-  { bgColor: "bg-orange-100", iconColor: "text-orange-500", hoverIconColor: "hover:text-orange-600", label: "Restaurant", Icon: GiKnifeFork },
-  { bgColor: "bg-green-100", iconColor: "text-green-500", hoverIconColor: "hover:text-green-600", label: "Groceries", Icon: FaShoppingBasket },
-  { bgColor: "bg-purple-100", iconColor: "text-purple-500", hoverIconColor: "hover:text-purple-600", label: "Gifts", Icon: FaGift },
-  { bgColor: "bg-pink-100", iconColor: "text-pink-500", hoverIconColor: "hover:text-pink-600", label: "Salon", Icon: FaCut },
-  { bgColor: "bg-yellow-100", iconColor: "text-yellow-600", hoverIconColor: "hover:text-yellow-700", label: "Education", Icon: FaGraduationCap },
-  { bgColor: "bg-blue-100", iconColor: "text-blue-500", hoverIconColor: "hover:text-blue-600", label: "Travel", Icon: FaPlaneDeparture },
-  { bgColor: "bg-indigo-100", iconColor: "text-indigo-500", hoverIconColor: "hover:text-indigo-600", label: "Entertainment", Icon: FaFilm },
-  { bgColor: "bg-teal-100", iconColor: "text-teal-500", hoverIconColor: "hover:text-teal-600", label: "Fitness", Icon: FaDumbbell },
+  // IMPORTANT: Added 'href' property to each item
+  { bgColor: "bg-red-100", iconColor: "text-red-500", hoverIconColor: "hover:text-red-600", label: "Hospital", Icon: FaHospital, href: "/hospitals" },
+  { bgColor: "bg-orange-100", iconColor: "text-orange-500", hoverIconColor: "hover:text-orange-600", label: "Restaurant", Icon: GiKnifeFork, href: "/food" },
+  { bgColor: "bg-green-100", iconColor: "text-green-500", hoverIconColor: "hover:text-green-600", label: "Groceries", Icon: FaShoppingBasket, href: "/fresh" },
+  { bgColor: "bg-purple-100", iconColor: "text-purple-500", hoverIconColor: "hover:text-purple-600", label: "Gifts", Icon: FaGift, href: "/gift-articles" },
+  { bgColor: "bg-pink-100", iconColor: "text-pink-500", hoverIconColor: "hover:text-pink-600", label: "Salon", Icon: FaCut, href: "/salons" },
+  { bgColor: "bg-yellow-100", iconColor: "text-yellow-600", hoverIconColor: "hover:text-yellow-700", label: "Education", Icon: FaGraduationCap, href: "/education" },
+  { bgColor: "bg-blue-100", iconColor: "text-blue-500", hoverIconColor: "hover:text-blue-600", label: "Travel", Icon: FaPlaneDeparture, href: "/travels" },
+  { bgColor: "bg-indigo-100", iconColor: "text-indigo-500", hoverIconColor: "hover:text-indigo-600", label: "Entertainment", Icon: FaFilm, href: "/events" },
+  { bgColor: "bg-teal-100", iconColor: "text-teal-500", hoverIconColor: "hover:text-teal-600", label: "Fitness", Icon: FaDumbbell, href: "/services" },
 ];
 
 const HomePage = () => {
@@ -79,22 +81,29 @@ const HomePage = () => {
               variants={gridVariants}
               className="grid grid-cols-3 sm:grid-cols-4 gap-4 lg:w-1/2 p-6 bg-gray-800/50 rounded-xl shadow-inner backdrop-blur-md border border-gray-700"
             >
-              {iconItems.map(({ bgColor, iconColor, hoverIconColor, label, Icon }, index) => (
-                <motion.div
-                  key={index}
-                  variants={iconVariants}
-                  className={`${bgColor} rounded-lg p-4 flex flex-col items-center cursor-pointer shadow-md transition-shadow duration-300`}
-                  whileHover={{
-                    scale: 1.1,
-                    boxShadow: "0 8px 15px rgba(0,0,0,0.3)",
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                  }}
-                >
-                  <Icon
-                    className={`w-10 h-10 ${iconColor} ${hoverIconColor} transition-colors duration-300`}
-                  />
-                  <span className="mt-2 text-white font-semibold">{label}</span>
-                </motion.div>
+              {iconItems.map(({ bgColor, iconColor, hoverIconColor, label, Icon, href }, index) => (
+                // Use Link with legacyBehavior to wrap motion.a
+                <Link key={index} href={href} legacyBehavior>
+                  {/* motion.a renders as an <a> tag and can be animated by Framer Motion */}
+                  <motion.a
+                    // Apply div-like styles to the <a> tag
+                    className={`${bgColor} rounded-lg p-4 flex flex-col items-center cursor-pointer shadow-md transition-shadow duration-300`}
+                    variants={iconVariants}
+                    whileHover={{
+                      scale: 1.1,
+                      boxShadow: "0 8px 15px rgba(0,0,0,0.3)",
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    }}
+                    // Add an aria-label for accessibility
+                    aria-label={`Go to ${label} discounts`}
+                  >
+                    <Icon
+                      className={`w-10 h-10 ${iconColor} ${hoverIconColor} transition-colors duration-300`}
+                    />
+                    {/* Ensure text color is white for visibility within the <a> tag */}
+                    <span className="mt-2 text-gray-900 font-semibold">{label}</span>
+                  </motion.a>
+                </Link>
               ))}
             </motion.div>
           </div>
